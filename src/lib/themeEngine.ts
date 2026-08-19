@@ -183,27 +183,40 @@ export async function renderPhpTheme({
   const defaultBride = "/assets/users/c5e3c1770e6ccad8326111fb0d58267e/bride.png";
   const defaultCover = "/assets/users/c5e3c1770e6ccad8326111fb0d58267e/kita.png";
 
-  const userGroomPath = path.join(process.cwd(), "public", "assets", "users", kunci, "groom.png");
-  const userBridePath = path.join(process.cwd(), "public", "assets", "users", kunci, "bride.png");
-  const userCoverPath = path.join(process.cwd(), "public", "assets", "users", kunci, "kita.png");
+  const userGroomPathPng = path.join(process.cwd(), "public", "assets", "users", kunci, "groom.png");
+  const userGroomPathJpg = path.join(process.cwd(), "public", "assets", "users", kunci, "groom.jpg");
+  const userBridePathPng = path.join(process.cwd(), "public", "assets", "users", kunci, "bride.png");
+  const userBridePathJpg = path.join(process.cwd(), "public", "assets", "users", kunci, "bride.jpg");
+  const userCoverPathPng = path.join(process.cwd(), "public", "assets", "users", kunci, "kita.png");
+  const userCoverPathJpg = path.join(process.cwd(), "public", "assets", "users", kunci, "kita.jpg");
 
-  const fotoPria =
-    dataRow?.foto_pria && dataRow.foto_pria !== "0"
-      ? dataRow.foto_pria
-      : fs.existsSync(userGroomPath)
-      ? `/assets/users/${kunci}/groom.png`
-      : defaultGroom;
+  const isValidUrl = (val?: string | null) =>
+    val && typeof val === "string" && (val.startsWith("/") || val.startsWith("http"));
 
-  const fotoWanita =
-    dataRow?.foto_wanita && dataRow.foto_wanita !== "0"
-      ? dataRow.foto_wanita
-      : fs.existsSync(userBridePath)
-      ? `/assets/users/${kunci}/bride.png`
-      : defaultBride;
+  let fotoPria = defaultGroom;
+  if (isValidUrl(dataRow?.foto_pria)) {
+    fotoPria = dataRow!.foto_pria;
+  } else if (fs.existsSync(userGroomPathPng)) {
+    fotoPria = `/assets/users/${kunci}/groom.png`;
+  } else if (fs.existsSync(userGroomPathJpg)) {
+    fotoPria = `/assets/users/${kunci}/groom.jpg`;
+  }
 
-  const fotoSampul = fs.existsSync(userCoverPath)
-    ? `/assets/users/${kunci}/kita.png`
-    : defaultCover;
+  let fotoWanita = defaultBride;
+  if (isValidUrl(dataRow?.foto_wanita)) {
+    fotoWanita = dataRow!.foto_wanita;
+  } else if (fs.existsSync(userBridePathPng)) {
+    fotoWanita = `/assets/users/${kunci}/bride.png`;
+  } else if (fs.existsSync(userBridePathJpg)) {
+    fotoWanita = `/assets/users/${kunci}/bride.jpg`;
+  }
+
+  let fotoSampul = defaultCover;
+  if (fs.existsSync(userCoverPathPng)) {
+    fotoSampul = `/assets/users/${kunci}/kita.png`;
+  } else if (fs.existsSync(userCoverPathJpg)) {
+    fotoSampul = `/assets/users/${kunci}/kita.jpg`;
+  }
 
   // Replace photo references in theme
   output = output.replace(/<\?=\s*base_url\(\);?\s*\?>\/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/(groom|pria)\.(png|jpg|jpeg|webp)/gi, fotoPria);

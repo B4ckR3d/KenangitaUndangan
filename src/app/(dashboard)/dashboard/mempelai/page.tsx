@@ -104,12 +104,13 @@ export default function MempelaiPage() {
         throw new Error(data.error || "Gagal mengunggah foto");
       }
 
+      const cacheBustUrl = `${data.url}?v=${Date.now()}`;
       if (type === "mempelai_pria") {
-        setPhotos((prev) => ({ ...prev, foto_pria: data.url }));
+        setPhotos((prev) => ({ ...prev, foto_pria: cacheBustUrl }));
       } else if (type === "mempelai_wanita") {
-        setPhotos((prev) => ({ ...prev, foto_wanita: data.url }));
+        setPhotos((prev) => ({ ...prev, foto_wanita: cacheBustUrl }));
       } else if (type === "sampul") {
-        setPhotos((prev) => ({ ...prev, foto_sampul: data.url }));
+        setPhotos((prev) => ({ ...prev, foto_sampul: cacheBustUrl }));
       }
 
       setSuccess(true);

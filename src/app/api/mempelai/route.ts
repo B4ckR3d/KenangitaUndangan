@@ -19,31 +19,45 @@ export async function GET(request: Request) {
     ]);
 
     const kunci = dataRow?.kunci || `user_${userId}`;
-    const userGroomPath = path.join(process.cwd(), "public", "assets", "users", kunci, "groom.png");
-    const userBridePath = path.join(process.cwd(), "public", "assets", "users", kunci, "bride.png");
-    const userCoverPath = path.join(process.cwd(), "public", "assets", "users", kunci, "kita.png");
+    const userGroomPathPng = path.join(process.cwd(), "public", "assets", "users", kunci, "groom.png");
+    const userGroomPathJpg = path.join(process.cwd(), "public", "assets", "users", kunci, "groom.jpg");
+    const userBridePathPng = path.join(process.cwd(), "public", "assets", "users", kunci, "bride.png");
+    const userBridePathJpg = path.join(process.cwd(), "public", "assets", "users", kunci, "bride.jpg");
+    const userCoverPathPng = path.join(process.cwd(), "public", "assets", "users", kunci, "kita.png");
+    const userCoverPathJpg = path.join(process.cwd(), "public", "assets", "users", kunci, "kita.jpg");
 
     const defaultGroom = "/assets/users/c5e3c1770e6ccad8326111fb0d58267e/groom.png";
     const defaultBride = "/assets/users/c5e3c1770e6ccad8326111fb0d58267e/bride.png";
     const defaultCover = "/assets/users/c5e3c1770e6ccad8326111fb0d58267e/kita.png";
 
-    const foto_pria =
-      dataRow?.foto_pria && dataRow.foto_pria !== "0"
-        ? dataRow.foto_pria
-        : fs.existsSync(userGroomPath)
-        ? `/assets/users/${kunci}/groom.png`
-        : defaultGroom;
+    // Helper to check if string is a valid file path/URL (not legacy flag '0' or '1')
+    const isValidUrl = (val?: string | null) =>
+      val && typeof val === "string" && (val.startsWith("/") || val.startsWith("http"));
 
-    const foto_wanita =
-      dataRow?.foto_wanita && dataRow.foto_wanita !== "0"
-        ? dataRow.foto_wanita
-        : fs.existsSync(userBridePath)
-        ? `/assets/users/${kunci}/bride.png`
-        : defaultBride;
+    let foto_pria = defaultGroom;
+    if (isValidUrl(dataRow?.foto_pria)) {
+      foto_pria = dataRow!.foto_pria;
+    } else if (fs.existsSync(userGroomPathPng)) {
+      foto_pria = `/assets/users/${kunci}/groom.png`;
+    } else if (fs.existsSync(userGroomPathJpg)) {
+      foto_pria = `/assets/users/${kunci}/groom.jpg`;
+    }
 
-    const foto_sampul = fs.existsSync(userCoverPath)
-      ? `/assets/users/${kunci}/kita.png`
-      : defaultCover;
+    let foto_wanita = defaultBride;
+    if (isValidUrl(dataRow?.foto_wanita)) {
+      foto_wanita = dataRow!.foto_wanita;
+    } else if (fs.existsSync(userBridePathPng)) {
+      foto_wanita = `/assets/users/${kunci}/bride.png`;
+    } else if (fs.existsSync(userBridePathJpg)) {
+      foto_wanita = `/assets/users/${kunci}/bride.jpg`;
+    }
+
+    let foto_sampul = defaultCover;
+    if (fs.existsSync(userCoverPathPng)) {
+      foto_sampul = `/assets/users/${kunci}/kita.png`;
+    } else if (fs.existsSync(userCoverPathJpg)) {
+      foto_sampul = `/assets/users/${kunci}/kita.jpg`;
+    }
 
     return NextResponse.json({
       success: true,

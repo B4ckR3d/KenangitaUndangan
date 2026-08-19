@@ -150,12 +150,13 @@ export default function GalleryPage() {
         throw new Error(data.error || "Gagal mengunggah foto");
       }
 
+      const cacheBustUrl = `${data.url}?v=${Date.now()}`;
       if (type === "mempelai_pria") {
-        setMempelaiPhotos((prev) => ({ ...prev, foto_pria: data.url }));
+        setMempelaiPhotos((prev) => ({ ...prev, foto_pria: cacheBustUrl }));
       } else if (type === "mempelai_wanita") {
-        setMempelaiPhotos((prev) => ({ ...prev, foto_wanita: data.url }));
+        setMempelaiPhotos((prev) => ({ ...prev, foto_wanita: cacheBustUrl }));
       } else if (type === "sampul") {
-        setMempelaiPhotos((prev) => ({ ...prev, foto_sampul: data.url }));
+        setMempelaiPhotos((prev) => ({ ...prev, foto_sampul: cacheBustUrl }));
       }
 
       setSuccess("Foto berhasil diperbarui dan diterapkan ke seluruh tema!");
