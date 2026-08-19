@@ -590,11 +590,11 @@ export default function GalleryPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={uploading || !selectedFile}
+                  disabled={uploadingType === "album" || !selectedFile}
                   className="flex-1 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-bold text-xs shadow-lg shadow-rose-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                  <span>{uploading ? "Mengunggah..." : "Simpan Foto"}</span>
+                  {uploadingType === "album" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  <span>{uploadingType === "album" ? "Mengunggah..." : "Simpan Foto"}</span>
                 </button>
               </div>
             </form>
