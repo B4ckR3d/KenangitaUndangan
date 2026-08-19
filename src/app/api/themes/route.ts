@@ -23,9 +23,9 @@ export async function GET(request: Request) {
     });
 
     const categoryMap = new Map<number, { id: number; name: string; slug: string }>();
-    categories.forEach((c) => categoryMap.set(c.id, c));
+    categories.forEach((c: any) => categoryMap.set(c.id, c));
 
-    const themes = rawThemes.map((t) => ({
+    const themes = rawThemes.map((t: any) => ({
       ...t,
       category: categoryMap.get(t.category_id) || null,
     }));

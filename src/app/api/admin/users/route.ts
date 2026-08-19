@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     });
 
     const enrichedUsers = await Promise.all(
-      rawUsers.map(async (u) => {
+      rawUsers.map(async (u: any) => {
         const mempelai = await prisma.mempelai.findFirst({
           where: { id_user: u.id },
           select: { nama_pria: true, nama_wanita: true },

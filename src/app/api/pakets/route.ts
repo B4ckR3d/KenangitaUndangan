@@ -45,7 +45,7 @@ export async function GET(req: Request) {
     });
 
     // Format features
-    const formattedPakets = pakets.map((p) => {
+    const formattedPakets = pakets.map((p: any) => {
       let features: string[] = [];
       if (p.fitur_list) {
         try {

@@ -16,7 +16,7 @@ export async function GET(request: Request) {
       orderBy: { id_tamu: "desc" },
     });
 
-    const formattedTamu = tamuList.map((t) => ({
+    const formattedTamu = tamuList.map((t: any) => ({
       ...t,
       almt_tamu: t.alamat_tamu || "",
     }));

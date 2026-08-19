@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       const uniqueId = `USR${Math.floor(100000 + Math.random() * 900000)}`;
 
       // Create all records inside a transaction
-      const createdData = await prisma.$transaction(async (tx) => {
+      const createdData = await prisma.$transaction(async (tx: any) => {
         // 1. Create User
         const newUser = await tx.user.create({
           data: {

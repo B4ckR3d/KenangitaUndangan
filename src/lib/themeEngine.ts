@@ -121,7 +121,7 @@ export async function renderPhpTheme({
 
   // Render Acara Table block
   const acaraRowsHtml = acaraList
-    .map((ac, idx) => `
+    .map((ac: any, idx: number) => `
       <table class="tb-acara" style="margin-bottom: 20px;">
         <thead>
           <tr>
@@ -161,7 +161,7 @@ export async function renderPhpTheme({
 
   // Render Cerita Kita Timeline block
   const ceritaTimelineHtml = ceritaList
-    .map((c, idx) => `
+    .map((c: any, idx: number) => `
       <div class="timeline">
         <div class="timeline-icon"></div>
         <div class="timeline-content ${idx % 2 === 1 ? "right" : ""}">
@@ -222,7 +222,7 @@ export async function renderPhpTheme({
   const albumGalleryHtml =
     albumList.length > 0
       ? albumList
-          .map((a) => {
+          .map((a: any) => {
             const rawUrl = a.album;
             const finalUrl =
               rawUrl.startsWith("/") || rawUrl.startsWith("http")
@@ -252,7 +252,7 @@ export async function renderPhpTheme({
 
   // Render Rekening / Hadiah block
   const rekeningListHtml = rekeningList
-    .map((r, idx) => `
+    .map((r: any, idx: number) => `
       <li class="list-group-item">
         <b>${r.nama_bank || "BANK"}</b><br>
         <span id="norek${idx + 1}" style="font-size: 16px; font-weight: bold; color: #d35400;">${r.no_rekening}</span>
@@ -272,7 +272,7 @@ export async function renderPhpTheme({
 
   // Render Komentar / Ucapan block
   const komenListHtml = komenList
-    .map((k) => `
+    .map((k: any) => `
       <div class="komen" style="padding: 10px; border-bottom: 1px solid #eee; margin-bottom: 8px; text-align: left;">
         <div class="col-12 komen-nama" style="font-weight: bold; color: #2c3e50;">
           ${k.nama_komen}
