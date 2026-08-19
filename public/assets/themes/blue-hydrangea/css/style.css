@@ -1,0 +1,302 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --blue-primary: #2563eb;
+  --blue-dark: #1e3a8a;
+  --blue-navy: #0f172a;
+  --blue-light: #60a5fa;
+  --blue-soft: #eff6ff;
+  --blue-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  --bg-paper: #f8fafc;
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --border-blue: rgba(59, 130, 246, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-paper);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(30, 58, 138, 0.05) 0%, transparent 40%);
+  color: #334155;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Playfair Display', serif;
+  color: var(--blue-navy);
+}
+
+.font-script {
+  font-family: 'Dancing Script', cursive;
+}
+
+/* ================== COVER / THE BEGINING ================== */
+.thebegining {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #f8fafc url('/assets/themes/blue-hydrangea/img/top_flower.png') no-repeat top center;
+  background-size: 100% auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.cover-card {
+  position: relative;
+  z-index: 2;
+  max-width: 420px;
+  width: 100%;
+  padding: 35px 25px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--border-blue);
+  border-radius: 32px;
+  box-shadow: 0 25px 60px rgba(30, 58, 138, 0.12), 0 0 30px rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(16px);
+}
+
+.wreath-cover {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  margin: 0 auto 15px;
+  object-fit: cover;
+  border: 3px solid #bfdbfe;
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+}
+
+#buka-undangan {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 34px;
+  margin-top: 20px;
+  background: var(--blue-gradient);
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+  transition: all 0.3s ease;
+}
+
+#buka-undangan:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 15px 30px rgba(37, 99, 235, 0.45);
+}
+
+/* ================== MAIN CONTENT & CARDS ================== */
+#konten {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 30px 20px 110px;
+}
+
+.section-title {
+  text-align: center;
+  margin: 40px 0 25px;
+}
+
+.section-title h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--blue-dark);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.section-title p {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.card-hydrangea {
+  background: var(--card-bg);
+  border: 1px solid var(--border-blue);
+  border-radius: 28px;
+  padding: 32px 24px;
+  margin-bottom: 25px;
+  box-shadow: 0 15px 40px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(12px);
+}
+
+.mempelai-img {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 3px solid #93c5fd;
+  margin: 0 auto 15px;
+  display: block;
+  object-fit: cover;
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+}
+
+.mempelai-pria-nama, .mempelai-wanita-nama {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  color: var(--blue-dark);
+  text-align: center;
+  margin: 10px 0 5px;
+}
+
+.mempelai-pria-ortu, .mempelai-wanita-ortu {
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.dengan {
+  font-family: 'Dancing Script', cursive;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--blue-primary);
+  text-align: center;
+  margin: 15px 0;
+}
+
+/* ================== ACARA TABLE ================== */
+.tb-acara {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 25px rgba(30, 58, 138, 0.04);
+}
+
+.acara-title {
+  background: #eff6ff;
+  color: var(--blue-dark);
+  font-family: 'Playfair Display', serif;
+  padding: 16px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #dbeafe;
+}
+
+.tb-acara td, .tb-acara th {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.icon-acara {
+  color: var(--blue-primary);
+  font-size: 18px;
+}
+
+/* ================== TIMELINE CERITA ================== */
+.timeline {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 24px;
+  border-left: 2px solid #93c5fd;
+}
+
+.timeline .date {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--blue-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.timeline .title {
+  font-size: 16px;
+  color: var(--blue-dark);
+  margin: 4px 0 6px;
+}
+
+.timeline .description {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* ================== HADIAH & REKENING ================== */
+.list-group-item {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  margin-bottom: 12px;
+  padding: 18px !important;
+  color: #334155 !important;
+}
+
+/* ================== BOTTOM NAVIGATION ================== */
+.mobile-bottom-nav2 {
+  position: fixed;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  width: 90%;
+  max-width: 460px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e2e8f0;
+  border-radius: 50px;
+  padding: 6px 12px;
+  box-shadow: 0 15px 35px rgba(30, 58, 138, 0.12);
+  backdrop-filter: blur(16px);
+}
+
+.mobile-bottom-nav__item {
+  flex: 1;
+  text-align: center;
+  padding: 6px 0;
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.mobile-bottom-nav__item--active, .mobile-bottom-nav__item:hover {
+  color: var(--blue-primary);
+}
+
+.navbar-icon {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+/* ================== AUDIO BUTTON ================== */
+.bulat {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--blue-gradient);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+  cursor: pointer;
+}

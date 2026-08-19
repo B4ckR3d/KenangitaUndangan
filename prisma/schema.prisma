@@ -1,0 +1,366 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  hp            String    @default("")
+  email         String
+  username      String    @unique
+  password      String
+  id_unik       String    @default("")
+  role          String    @default("user")
+  status        Int       @default(1)
+  permissions   String?   @default("all")
+  created_at    DateTime  @default(now())
+  token         String?
+  created_token DateTime?
+
+  @@map("users")
+}
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  password     String
+  email        String
+  nama_lengkap String
+  created_at   DateTime @default(now())
+
+  @@map("admin")
+}
+
+model Theme {
+  id          Int      @id @default(autoincrement())
+  nama_theme  String
+  kode_theme  String
+  status      Int      @default(1)
+  category_id Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+
+  @@map("themes")
+}
+
+model ThemeCategory {
+  id   Int    @id @default(autoincrement())
+  name String
+  slug String
+
+  @@map("tema_categories")
+}
+
+model Acara {
+  id_acara      Int     @id @default(autoincrement())
+  nama_acara    String
+  tgl_acara     String?
+  waktu_mulai   String
+  waktu_akhir   String
+  tempat_acara  String
+  alamat_acara  String
+  maps          String?
+  set_countdown String? @default("N")
+  id_user       Int
+
+  @@map("acara")
+}
+
+model Mempelai {
+  id_mempelai           Int      @id @default(autoincrement()) @map("id")
+  id_user               Int
+  nama_pria             String
+  nama_panggilan_pria   String
+  nama_ibu_pria         String
+  nama_ayah_pria        String
+  nama_wanita           String
+  nama_panggilan_wanita String
+  nama_ibu_wanita       String
+  nama_ayah_wanita      String
+  posisi_mempelai       String   @default("0")
+  created_at            DateTime @default(now())
+  updated_at            DateTime @default(now()) @updatedAt
+
+  @@map("mempelai")
+}
+
+model Komen {
+  id_komen   Int      @id @default(autoincrement()) @map("id")
+  id_user    Int
+  nama_komen String   @map("nama_komentar")
+  isi_komen  String   @map("isi_komentar")
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("komen")
+}
+
+model Tamu {
+  id_tamu      Int       @id @default(autoincrement())
+  nama_tamu    String
+  nama_slug    String    @default("")
+  alamat_tamu  String    @default("")
+  alamat_slug  String    @default("")
+  no_wa        String    @default("")
+  qrcode       String    @default("")
+  id_user      Int
+  tgl_kirim    String?
+  status_kirim String    @default("belum dikirim")
+  status       String?
+  waktu_hadir  DateTime?
+
+  @@map("tamu")
+}
+
+model Testimoni {
+  id_testi     Int      @id @default(autoincrement())
+  id_user      Int
+  nama_lengkap String?
+  kota         String?
+  provinsi     String?
+  ulasan       String?
+  status       Int      @default(0)
+  created_at   DateTime @default(now())
+
+  @@map("testimoni")
+}
+
+model Paket {
+  id_paket        Int     @id @default(autoincrement())
+  nama_paket      String
+  harga_paket     String  @default("0")
+  masa_aktif      Int     @default(60)
+  deskripsi       String? @default("")
+  fitur_list      String? @default("")
+  buku_tamu       Int     @default(0)
+  kirim_whatsapp  Int     @default(0)
+  tema_bebas      Int     @default(0)
+  kirim_hadiah    Int     @default(0)
+  import_datatamu Int     @default(0)
+
+  @@map("paket")
+}
+
+model Album {
+  id      Int    @id @default(autoincrement())
+  id_user Int
+  album   String
+
+  @@map("album")
+}
+
+model Cerita {
+  id             Int      @id @default(autoincrement())
+  id_user        Int
+  tanggal_cerita String
+  judul_cerita   String
+  isi_cerita     String
+  created_at     DateTime @default(now())
+  updated_at     DateTime @default(now()) @updatedAt
+
+  @@map("cerita")
+}
+
+model Data {
+  id            Int      @id @default(autoincrement())
+  id_user       Int
+  foto_pria     String   @default("0")
+  foto_wanita   String   @default("0")
+  maps          String?
+  video         String   @default("")
+  kunci         String   @default("")
+  salam_pembuka String   @default("")
+  token_wa      String?
+  salam_wa_atas String   @default("")
+  salam_wa_bawah String  @default("")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now()) @updatedAt
+
+  @@map("data")
+}
+
+model Order {
+  id         Int      @id @default(autoincrement())
+  id_user    Int
+  domain     String
+  theme      String
+  id_paket   Int
+  status     Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("order")
+}
+
+model Pembayaran {
+  id                  Int       @id @default(autoincrement())
+  id_user             Int
+  invoice             String
+  nama_lengkap        String?
+  bukti               String?
+  nama_bank           String    @default("")
+  va_number           String    @default("")
+  status              Int?
+  created_at          DateTime  @default(now())
+  harga               Int       @default(0)
+  payment_type        String    @default("")
+  transaction_status  String    @default("")
+  transaction_time    DateTime?
+  transaction_expired DateTime?
+  biller_code         String?
+  instruction         String    @default("")
+  status_order        String    @default("1")
+
+  @@map("pembayaran")
+}
+
+model Pengunjung {
+  id              Int      @id @default(autoincrement())
+  id_user         Int
+  nama_pengunjung String
+  addr            String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now()) @updatedAt
+
+  @@map("pengunjung")
+}
+
+model Quote {
+  id_quote     Int     @id @default(autoincrement())
+  isi_quote    String?
+  sumber_quote String?
+  id_user      Int
+
+  @@map("quote")
+}
+
+model Rekening {
+  id          Int     @id @default(autoincrement())
+  id_user     Int
+  nama_bank   String?
+  no_rekening String?
+  nama_pemilik String?
+  qrcode_bank String?
+
+  @@map("rekening")
+}
+
+model Rules {
+  id         Int      @id @default(autoincrement())
+  id_user    Int
+  sampul     Int      @default(1)
+  mempelai   Int      @default(1)
+  acara      Int      @default(1)
+  komen      Int      @default(1)
+  gallery    Int      @default(1)
+  cerita     Int      @default(1)
+  lokasi     Int      @default(1)
+  prokes     Int      @default(1)
+  qrcode     Int      @default(1)
+  hadiah     Int      @default(1)
+  quote      Int      @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("rules")
+}
+
+model Setting {
+  id            Int      @id @default(autoincrement())
+  harga         Float    @default(100000)
+  img           String   @default("")
+  created_at    DateTime @default(now())
+  trial         Int      @default(2)
+  aktif         Int      @default(60)
+  host_email    String?
+  email         String?
+  pass_email    String?
+  no_wa         String?
+  pesan_wa      String?
+  salam_pembuka String?
+  wa_gateway    String   @default("nusagateway")
+  token_wa      String?
+  salam_wa_atas String   @default("")
+  salam_wa_bawah String  @default("")
+
+  @@map("setting")
+}
+
+model SettingPembayaran {
+  id_setting          Int     @id @default(autoincrement())
+  metode_bayar        String  @default("manual")
+  bank_manual         String?
+  norek_manual        String?
+  nama_manual         String?
+  url_midtrans        String?
+  serverkey_midtrans  String?
+  clientkey_midtrans  String?
+  midtrans_production String? @default("false")
+  url_tripay          String?
+  apikey_tripay       String?
+  privatekey_tripay   String?
+  merchantcode_tripay String?
+
+  @@map("setting_pembayaran")
+}
+
+model SliderBukutamu {
+  id_slider   Int    @id @default(autoincrement())
+  id_user     Int
+  nama_slider String
+
+  @@map("slider_bukutamu")
+}
+
+model ThemesVideo {
+  id_theme    Int    @id @default(autoincrement())
+  nama_tema   String
+  harga       Int
+  preview     String
+  url_video   String
+  category_id Int
+
+  @@map("themes_video")
+}
+
+model VideoCategory {
+  id   Int    @id @default(autoincrement())
+  name String
+  slug String
+
+  @@map("video_categories")
+}
+
+model OtpToken {
+  id         Int      @id @default(autoincrement())
+  email      String
+  code       String
+  action     String   @default("register")
+  expires_at DateTime
+  payload    String?
+  created_at DateTime @default(now())
+
+  @@map("otp_tokens")
+}
+
+model Transaction {
+  id          Int       @id @default(autoincrement())
+  id_user     Int
+  orderId     String    @unique
+  id_paket    Int?
+  amount      Int
+  totalAmount Int
+  status      String    @default("PENDING") // PENDING, PAID, EXPIRED, SUCCESS
+  qrisUrl     String?
+  qrisImage   String?
+  signature   String?
+  expiredAt   DateTime?
+  paidAt      DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now()) @updatedAt
+
+  @@map("transactions")
+}
