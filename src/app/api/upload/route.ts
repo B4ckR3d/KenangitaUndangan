@@ -18,14 +18,14 @@ export async function POST(request: Request) {
     const folderType = ((formData.get("folder") as string) || "gallery").toLowerCase().trim();
 
     if (!file || typeof file === "string" || file.size === 0) {
-      return NextResponse.json({ error: "File gambar tidak valid atau berukuran 0 byte" }, { status: 400 });
+      return NextResponse.json({ error: "File gambar tidak valid atau kosong (0 bytes)" }, { status: 400 });
     }
 
-    // Validate mime type
+    // Validate mime type and extension
     const validMimes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml", "image/jpg"];
     if (!validMimes.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|webp|gif|svg)$/i)) {
       return NextResponse.json(
-        { error: "Format file tidak didukung. Harap upload gambar JPG, PNG, atau WEBP." },
+        { error: "Format file tidak didukung. Harap upload file gambar (JPG, PNG, WEBP)." },
         { status: 400 }
       );
     }
@@ -39,16 +39,29 @@ export async function POST(request: Request) {
     }
 
     // Sanitize folder name
-    const safeFolder = folderType.replace(/[^a-zA-Z0-9_-]/g, "");
-    const uploadDir = path.join(process.cwd(), "public", "uploads", safeFolder);
+    const safeFolder = folderType.replace(/[^a-zA-Z0-9_-]/g, "") || "gallery";
+    const publicDir = path.join(process.cwd(), "public");
+    const uploadsDir = path.join(publicDir, "uploads");
+    const uploadDir = path.join(uploadsDir, safeFolder);
 
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    try {
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true, mode: 0o775 });
+      }
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true, mode: 0o775 });
+      }
+    } catch (dirErr: any) {
+      console.error("Directory Creation Error:", dirErr);
+      return NextResponse.json(
+        { error: `Gagal membuat direktori upload di server: ${dirErr.message}. Periksa izin folder di VPS.` },
+        { status: 500 }
+      );
     }
 
     // Generate unique filename
     let ext = path.extname(file.name) || ".jpg";
-    if (ext === ".jpeg") ext = ".jpg";
+    if (ext.toLowerCase() === ".jpeg") ext = ".jpg";
     const timestamp = Date.now();
     const randomHex = Math.random().toString(36).substring(2, 8);
     const fileName = `user_${userId}_${timestamp}_${randomHex}${ext.toLowerCase()}`;
@@ -62,11 +75,19 @@ export async function POST(request: Request) {
     }
 
     // Write file to public/uploads/...
-    fs.writeFileSync(filePath, buffer);
     try {
-      fs.chmodSync(filePath, 0o664);
-    } catch {
-      // Ignore permission chmod error on Windows
+      fs.writeFileSync(filePath, buffer);
+      try {
+        fs.chmodSync(filePath, 0o664);
+      } catch {
+        // Ignore chmod on Windows
+      }
+    } catch (writeErr: any) {
+      console.error("Write File Error:", writeErr);
+      return NextResponse.json(
+        { error: `Gagal menulis file ke server disk: ${writeErr.message}. Periksa izin folder VPS (chmod 775 /var/www/undangan-next/public).` },
+        { status: 500 }
+      );
     }
 
     const publicUrl = `/uploads/${safeFolder}/${fileName}`;
@@ -93,42 +114,55 @@ export async function POST(request: Request) {
       }
     }
 
-    const userAssetDir = path.join(process.cwd(), "public", "assets", "users", kunci);
+    const assetsUsersDir = path.join(publicDir, "assets", "users");
+    if (!fs.existsSync(assetsUsersDir)) {
+      try {
+        fs.mkdirSync(assetsUsersDir, { recursive: true, mode: 0o775 });
+      } catch {}
+    }
+
+    const userAssetDir = path.join(assetsUsersDir, kunci);
     if (!fs.existsSync(userAssetDir)) {
-      fs.mkdirSync(userAssetDir, { recursive: true });
+      try {
+        fs.mkdirSync(userAssetDir, { recursive: true, mode: 0o775 });
+      } catch {}
     }
 
     // Sync specific photo types directly with PHP themes' standard naming convention
-    if (folderType === "mempelai_pria" || folderType === "groom") {
-      fs.writeFileSync(path.join(userAssetDir, "groom.png"), buffer);
-      fs.writeFileSync(path.join(userAssetDir, "groom.jpg"), buffer);
-      if (dataRow) {
-        await prisma.data.update({
-          where: { id: dataRow.id },
-          data: { foto_pria: publicUrl },
+    try {
+      if (folderType === "mempelai_pria" || folderType === "groom") {
+        fs.writeFileSync(path.join(userAssetDir, "groom.png"), buffer);
+        fs.writeFileSync(path.join(userAssetDir, "groom.jpg"), buffer);
+        if (dataRow) {
+          await prisma.data.update({
+            where: { id: dataRow.id },
+            data: { foto_pria: publicUrl },
+          });
+        }
+      } else if (folderType === "mempelai_wanita" || folderType === "bride") {
+        fs.writeFileSync(path.join(userAssetDir, "bride.png"), buffer);
+        fs.writeFileSync(path.join(userAssetDir, "bride.jpg"), buffer);
+        if (dataRow) {
+          await prisma.data.update({
+            where: { id: dataRow.id },
+            data: { foto_wanita: publicUrl },
+          });
+        }
+      } else if (folderType === "sampul" || folderType === "cover" || folderType === "kita") {
+        fs.writeFileSync(path.join(userAssetDir, "kita.png"), buffer);
+        fs.writeFileSync(path.join(userAssetDir, "kita.jpg"), buffer);
+        fs.writeFileSync(path.join(userAssetDir, "bg-tamu.png"), buffer);
+      } else if (folderType === "gallery" || folderType === "album") {
+        // Record in Prisma album
+        await prisma.album.create({
+          data: {
+            id_user: userId,
+            album: publicUrl,
+          },
         });
       }
-    } else if (folderType === "mempelai_wanita" || folderType === "bride") {
-      fs.writeFileSync(path.join(userAssetDir, "bride.png"), buffer);
-      fs.writeFileSync(path.join(userAssetDir, "bride.jpg"), buffer);
-      if (dataRow) {
-        await prisma.data.update({
-          where: { id: dataRow.id },
-          data: { foto_wanita: publicUrl },
-        });
-      }
-    } else if (folderType === "sampul" || folderType === "cover" || folderType === "kita") {
-      fs.writeFileSync(path.join(userAssetDir, "kita.png"), buffer);
-      fs.writeFileSync(path.join(userAssetDir, "kita.jpg"), buffer);
-      fs.writeFileSync(path.join(userAssetDir, "bg-tamu.png"), buffer);
-    } else if (folderType === "gallery" || folderType === "album") {
-      // Record in Prisma album
-      await prisma.album.create({
-        data: {
-          id_user: userId,
-          album: publicUrl,
-        },
-      });
+    } catch (syncErr: any) {
+      console.warn("Theme photo sync warning:", syncErr);
     }
 
     return NextResponse.json({
