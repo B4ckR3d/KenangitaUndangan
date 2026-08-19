@@ -82,6 +82,16 @@ export default function MempelaiPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // 1. Instant Optimistic Preview (0ms visual feedback)
+    const localBlobUrl = URL.createObjectURL(file);
+    if (type === "mempelai_pria") {
+      setPhotos((prev) => ({ ...prev, foto_pria: localBlobUrl }));
+    } else if (type === "mempelai_wanita") {
+      setPhotos((prev) => ({ ...prev, foto_wanita: localBlobUrl }));
+    } else if (type === "sampul") {
+      setPhotos((prev) => ({ ...prev, foto_sampul: localBlobUrl }));
+    }
+
     setUploading(type);
     setError(null);
 
@@ -117,6 +127,7 @@ export default function MempelaiPage() {
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
       setError(err?.message || "Terjadi kesalahan saat mengunggah foto");
+      loadMempelai();
     } finally {
       setUploading(null);
     }
@@ -221,11 +232,20 @@ export default function MempelaiPage() {
                 <img
                   src={photos.foto_sampul}
                   alt="Foto Sampul"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-opacity duration-300"
                   onError={(e: any) => {
                     e.currentTarget.src = "/assets/users/c5e3c1770e6ccad8326111fb0d58267e/kita.png";
                   }}
                 />
+
+                {/* Uploading Overlay */}
+                {uploading === "sampul" && (
+                  <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xs flex flex-col items-center justify-center gap-2 z-20 animate-in fade-in">
+                    <Loader2 className="w-7 h-7 animate-spin text-rose-500" />
+                    <span className="text-[11px] font-bold text-white tracking-tight">Menyimpan Foto...</span>
+                  </div>
+                )}
+
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <Camera className="w-6 h-6 text-white" />
                 </div>
@@ -243,14 +263,14 @@ export default function MempelaiPage() {
                   type="button"
                   onClick={() => coverInputRef.current?.click()}
                   disabled={uploading === "sampul"}
-                  className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center gap-2 disabled:opacity-60"
                 >
                   {uploading === "sampul" ? (
                     <Loader2 className="w-4 h-4 animate-spin text-rose-400" />
                   ) : (
                     <Upload className="w-4 h-4 text-rose-400" />
                   )}
-                  <span>{uploading === "sampul" ? "Mengunggah..." : "Upload Foto Sampul Baru (PC/HP)"}</span>
+                  <span>{uploading === "sampul" ? "Mengunggah Sampul..." : "Upload Foto Sampul Baru (PC/HP)"}</span>
                 </button>
                 <p className="text-[11px] text-slate-500">
                   Format disarankan: JPG/PNG/WEBP (Rasio landscape atau portrait resolusi tinggi, maks 10MB).
@@ -279,11 +299,19 @@ export default function MempelaiPage() {
                   <img
                     src={photos.foto_pria}
                     alt="Mempelai Pria"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-opacity duration-300"
                     onError={(e: any) => {
                       e.currentTarget.src = "/assets/users/c5e3c1770e6ccad8326111fb0d58267e/groom.png";
                     }}
                   />
+
+                  {/* Uploading Overlay */}
+                  {uploading === "mempelai_pria" && (
+                    <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xs flex flex-col items-center justify-center gap-1.5 z-20 animate-in fade-in">
+                      <Loader2 className="w-6 h-6 animate-spin text-blue-400" />
+                      <span className="text-[9px] font-bold text-white">Menyimpan...</span>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-1.5 flex-1">
                   <input
@@ -297,7 +325,7 @@ export default function MempelaiPage() {
                     type="button"
                     onClick={() => groomInputRef.current?.click()}
                     disabled={uploading === "mempelai_pria"}
-                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center gap-2"
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center gap-2 disabled:opacity-60"
                   >
                     {uploading === "mempelai_pria" ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-400" />
@@ -387,11 +415,19 @@ export default function MempelaiPage() {
                   <img
                     src={photos.foto_wanita}
                     alt="Mempelai Wanita"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-opacity duration-300"
                     onError={(e: any) => {
                       e.currentTarget.src = "/assets/users/c5e3c1770e6ccad8326111fb0d58267e/bride.png";
                     }}
                   />
+
+                  {/* Uploading Overlay */}
+                  {uploading === "mempelai_wanita" && (
+                    <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xs flex flex-col items-center justify-center gap-1.5 z-20 animate-in fade-in">
+                      <Loader2 className="w-6 h-6 animate-spin text-pink-400" />
+                      <span className="text-[9px] font-bold text-white">Menyimpan...</span>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-1.5 flex-1">
                   <input
@@ -405,7 +441,7 @@ export default function MempelaiPage() {
                     type="button"
                     onClick={() => brideInputRef.current?.click()}
                     disabled={uploading === "mempelai_wanita"}
-                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center gap-2"
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center gap-2 disabled:opacity-60"
                   >
                     {uploading === "mempelai_wanita" ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin text-pink-400" />

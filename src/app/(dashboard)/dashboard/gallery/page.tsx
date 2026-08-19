@@ -37,7 +37,7 @@ export default function GalleryPage() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [uploadingType, setUploadingType] = useState<string | null>(null);
   const [fetching, setFetching] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -92,7 +92,7 @@ export default function GalleryPage() {
       return;
     }
 
-    setUploading(true);
+    setUploadingType("album");
     setError(null);
 
     try {
@@ -121,16 +121,26 @@ export default function GalleryPage() {
     } catch (err: any) {
       setError(err?.message || "Terjadi kesalahan saat mengunggah foto");
     } finally {
-      setUploading(false);
+      setUploadingType(null);
     }
   };
 
-  // Handle Direct Upload for Groom, Bride, Cover
+  // Handle Direct Upload for Groom, Bride, Cover with Instant Optimistic Preview
   const handleSingleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "mempelai_pria" | "mempelai_wanita" | "sampul") => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploading(true);
+    // 1. Instant Optimistic Preview (0ms visual feedback)
+    const localBlobUrl = URL.createObjectURL(file);
+    if (type === "mempelai_pria") {
+      setMempelaiPhotos((prev) => ({ ...prev, foto_pria: localBlobUrl }));
+    } else if (type === "mempelai_wanita") {
+      setMempelaiPhotos((prev) => ({ ...prev, foto_wanita: localBlobUrl }));
+    } else if (type === "sampul") {
+      setMempelaiPhotos((prev) => ({ ...prev, foto_sampul: localBlobUrl }));
+    }
+
+    setUploadingType(type);
     setError(null);
 
     try {
@@ -163,8 +173,10 @@ export default function GalleryPage() {
       setTimeout(() => setSuccess(null), 3500);
     } catch (err: any) {
       setError(err?.message || "Terjadi kesalahan saat mengunggah foto");
+      // Reload on failure to restore true state
+      loadData();
     } finally {
-      setUploading(false);
+      setUploadingType(null);
     }
   };
 
@@ -358,11 +370,19 @@ export default function GalleryPage() {
                 <img
                   src={mempelaiPhotos.foto_sampul}
                   alt="Foto Sampul"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-opacity duration-300"
                   onError={(e: any) => {
                     e.currentTarget.src = "/assets/users/c5e3c1770e6ccad8326111fb0d58267e/kita.png";
                   }}
                 />
+
+                {/* Uploading Overlay */}
+                {uploadingType === "sampul" && (
+                  <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xs flex flex-col items-center justify-center gap-2 z-20 animate-in fade-in">
+                    <Loader2 className="w-7 h-7 animate-spin text-rose-500" />
+                    <span className="text-[11px] font-bold text-white tracking-tight">Menyimpan Foto...</span>
+                  </div>
+                )}
               </div>
               <div className="space-y-2 flex-1">
                 <input
@@ -375,11 +395,15 @@ export default function GalleryPage() {
                 <button
                   type="button"
                   onClick={() => coverInputRef.current?.click()}
-                  disabled={uploading}
-                  className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center gap-2"
+                  disabled={uploadingType === "sampul"}
+                  className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center gap-2 disabled:opacity-60"
                 >
-                  <Upload className="w-4 h-4 text-rose-400" />
-                  <span>Upload Foto Sampul Baru (PC/HP)</span>
+                  {uploadingType === "sampul" ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-rose-400" />
+                  ) : (
+                    <Upload className="w-4 h-4 text-rose-400" />
+                  )}
+                  <span>{uploadingType === "sampul" ? "Mengunggah Sampul..." : "Upload Foto Sampul Baru (PC/HP)"}</span>
                 </button>
                 <p className="text-[11px] text-slate-500">
                   Gunakan foto resolusi tinggi bersama pasangan (Landscape / Portrait).
@@ -397,15 +421,23 @@ export default function GalleryPage() {
                 <h3 className="text-sm font-bold text-white">Foto Mempelai Pria (Groom)</h3>
               </div>
               <div className="flex items-center gap-5">
-                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shrink-0">
+                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 relative shrink-0">
                   <img
                     src={mempelaiPhotos.foto_pria}
                     alt="Mempelai Pria"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-opacity duration-300"
                     onError={(e: any) => {
                       e.currentTarget.src = "/assets/users/c5e3c1770e6ccad8326111fb0d58267e/groom.png";
                     }}
                   />
+
+                  {/* Uploading Overlay */}
+                  {uploadingType === "mempelai_pria" && (
+                    <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xs flex flex-col items-center justify-center gap-1.5 z-20 animate-in fade-in">
+                      <Loader2 className="w-6 h-6 animate-spin text-blue-400" />
+                      <span className="text-[9px] font-bold text-white">Menyimpan...</span>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2 flex-1">
                   <input
@@ -418,10 +450,15 @@ export default function GalleryPage() {
                   <button
                     type="button"
                     onClick={() => groomInputRef.current?.click()}
-                    disabled={uploading}
-                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center gap-2"
+                    disabled={uploadingType === "mempelai_pria"}
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center gap-2 disabled:opacity-60"
                   >
-                    <Upload className="w-3.5 h-3.5 text-blue-400" /> Ganti Foto Pria
+                    {uploadingType === "mempelai_pria" ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-400" />
+                    ) : (
+                      <Upload className="w-3.5 h-3.5 text-blue-400" />
+                    )}
+                    <span>{uploadingType === "mempelai_pria" ? "Mengunggah..." : "Ganti Foto Pria"}</span>
                   </button>
                   <p className="text-[10px] text-slate-500">Otomatis disinkronkan ke seluruh tema.</p>
                 </div>
@@ -435,15 +472,23 @@ export default function GalleryPage() {
                 <h3 className="text-sm font-bold text-white">Foto Mempelai Wanita (Bride)</h3>
               </div>
               <div className="flex items-center gap-5">
-                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shrink-0">
+                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 relative shrink-0">
                   <img
                     src={mempelaiPhotos.foto_wanita}
                     alt="Mempelai Wanita"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-opacity duration-300"
                     onError={(e: any) => {
                       e.currentTarget.src = "/assets/users/c5e3c1770e6ccad8326111fb0d58267e/bride.png";
                     }}
                   />
+
+                  {/* Uploading Overlay */}
+                  {uploadingType === "mempelai_wanita" && (
+                    <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xs flex flex-col items-center justify-center gap-1.5 z-20 animate-in fade-in">
+                      <Loader2 className="w-6 h-6 animate-spin text-pink-400" />
+                      <span className="text-[9px] font-bold text-white">Menyimpan...</span>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2 flex-1">
                   <input
@@ -456,10 +501,15 @@ export default function GalleryPage() {
                   <button
                     type="button"
                     onClick={() => brideInputRef.current?.click()}
-                    disabled={uploading}
-                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center gap-2"
+                    disabled={uploadingType === "mempelai_wanita"}
+                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center gap-2 disabled:opacity-60"
                   >
-                    <Upload className="w-3.5 h-3.5 text-pink-400" /> Ganti Foto Wanita
+                    {uploadingType === "mempelai_wanita" ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-pink-400" />
+                    ) : (
+                      <Upload className="w-3.5 h-3.5 text-pink-400" />
+                    )}
+                    <span>{uploadingType === "mempelai_wanita" ? "Mengunggah..." : "Ganti Foto Wanita"}</span>
                   </button>
                   <p className="text-[10px] text-slate-500">Otomatis disinkronkan ke seluruh tema.</p>
                 </div>
