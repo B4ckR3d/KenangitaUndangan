@@ -206,17 +206,17 @@ export async function renderPhpTheme({
     : defaultCover;
 
   // Replace photo references in theme
-  output = output.replace(/<\?=\s*base_url\(\);?\s*\?>\/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/groom\.png/gi, fotoPria);
-  output = output.replace(/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/groom\.png/gi, fotoPria);
-  output = output.replace(/\/assets\/users\/[a-zA-Z0-9_-]+\/groom\.png/gi, fotoPria);
+  output = output.replace(/<\?=\s*base_url\(\);?\s*\?>\/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/(groom|pria)\.(png|jpg|jpeg|webp)/gi, fotoPria);
+  output = output.replace(/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/(groom|pria)\.(png|jpg|jpeg|webp)/gi, fotoPria);
+  output = output.replace(/\/assets\/users\/[a-zA-Z0-9_-]+\/(groom|pria)\.(png|jpg|jpeg|webp)/gi, fotoPria);
 
-  output = output.replace(/<\?=\s*base_url\(\);?\s*\?>\/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/bride\.png/gi, fotoWanita);
-  output = output.replace(/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/bride\.png/gi, fotoWanita);
-  output = output.replace(/\/assets\/users\/[a-zA-Z0-9_-]+\/bride\.png/gi, fotoWanita);
+  output = output.replace(/<\?=\s*base_url\(\);?\s*\?>\/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/(bride|wanita)\.(png|jpg|jpeg|webp)/gi, fotoWanita);
+  output = output.replace(/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/(bride|wanita)\.(png|jpg|jpeg|webp)/gi, fotoWanita);
+  output = output.replace(/\/assets\/users\/[a-zA-Z0-9_-]+\/(bride|wanita)\.(png|jpg|jpeg|webp)/gi, fotoWanita);
 
-  output = output.replace(/<\?=\s*base_url\(\);?\s*\?>\/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/kita\.png/gi, fotoSampul);
-  output = output.replace(/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/kita\.png/gi, fotoSampul);
-  output = output.replace(/\/assets\/users\/[a-zA-Z0-9_-]+\/kita\.png/gi, fotoSampul);
+  output = output.replace(/<\?=\s*base_url\(\);?\s*\?>\/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/(kita|sampul|cover|bg-tamu|Ful)\.(png|jpg|jpeg|webp)/gi, fotoSampul);
+  output = output.replace(/assets\/users\/<\?=\s*\$kunci;?\s*\?>\/(kita|sampul|cover|bg-tamu|Ful)\.(png|jpg|jpeg|webp)/gi, fotoSampul);
+  output = output.replace(/\/assets\/users\/[a-zA-Z0-9_-]+\/(kita|sampul|cover|bg-tamu|Ful)\.(png|jpg|jpeg|webp)/gi, fotoSampul);
 
   // Render Album Gallery block
   const albumGalleryHtml =

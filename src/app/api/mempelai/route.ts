@@ -122,22 +122,29 @@ export async function POST(request: Request) {
     if (foto_pria || foto_wanita) {
       const dataRow = await prisma.data.findFirst({ where: { id_user: userId } });
       const updateData: any = {};
-      if (foto_pria) updateData.foto_pria = foto_pria;
-      if (foto_wanita) updateData.foto_wanita = foto_wanita;
 
-      if (dataRow) {
-        await prisma.data.update({
-          where: { id: dataRow.id },
-          data: updateData,
-        });
-      } else {
-        await prisma.data.create({
-          data: {
-            id_user: userId,
-            kunci: `user_${userId}`,
-            ...updateData,
-          },
-        });
+      if (foto_pria && !foto_pria.includes("c5e3c1770e6ccad8326111fb0d58267e")) {
+        updateData.foto_pria = foto_pria;
+      }
+      if (foto_wanita && !foto_wanita.includes("c5e3c1770e6ccad8326111fb0d58267e")) {
+        updateData.foto_wanita = foto_wanita;
+      }
+
+      if (Object.keys(updateData).length > 0) {
+        if (dataRow) {
+          await prisma.data.update({
+            where: { id: dataRow.id },
+            data: updateData,
+          });
+        } else {
+          await prisma.data.create({
+            data: {
+              id_user: userId,
+              kunci: `user_${userId}`,
+              ...updateData,
+            },
+          });
+        }
       }
     }
 

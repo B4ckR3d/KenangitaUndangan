@@ -19,6 +19,7 @@ import {
   Heart,
   Layers,
 } from "lucide-react";
+import { compressImageFile } from "@/lib/imageCompressor";
 
 interface AlbumItem {
   id?: number;
@@ -95,8 +96,9 @@ export default function GalleryPage() {
     setError(null);
 
     try {
+      const optimizedFile = await compressImageFile(selectedFile);
       const formData = new FormData();
-      formData.append("file", selectedFile);
+      formData.append("file", optimizedFile);
       formData.append("folder", "gallery");
 
       const uploadRes = await fetch("/api/upload", {
@@ -132,8 +134,9 @@ export default function GalleryPage() {
     setError(null);
 
     try {
+      const optimizedFile = await compressImageFile(file);
       const uploadData = new FormData();
-      uploadData.append("file", file);
+      uploadData.append("file", optimizedFile);
       uploadData.append("folder", type);
 
       const res = await fetch("/api/upload", {

@@ -13,6 +13,7 @@ import {
   Camera,
   Image as ImageIcon,
 } from "lucide-react";
+import { compressImageFile } from "@/lib/imageCompressor";
 
 export default function MempelaiPage() {
   const [formData, setFormData] = useState({
@@ -85,8 +86,11 @@ export default function MempelaiPage() {
     setError(null);
 
     try {
+      // Kompresi dan normalisasi foto sebelum diunggah
+      const optimizedFile = await compressImageFile(file);
+
       const uploadData = new FormData();
-      uploadData.append("file", file);
+      uploadData.append("file", optimizedFile);
       uploadData.append("folder", type);
 
       const res = await fetch("/api/upload", {
