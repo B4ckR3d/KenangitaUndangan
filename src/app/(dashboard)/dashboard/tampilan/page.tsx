@@ -105,7 +105,7 @@ export default function TampilanPage() {
         }),
       });
       const data = await res.json();
-      if (res.status === 402 || data.requiresSubscription) {
+      if ((res.status === 402 || data.requiresSubscription) && currentUser?.role !== "admin") {
         setTargetThemeName(themeName);
         setSubModalOpen(true);
         return;
